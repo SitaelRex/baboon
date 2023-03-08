@@ -20,8 +20,6 @@ local function Init()
     local mod = SetupModule(FULLPATH)
     mod.Update = Update
     mod.Draw = Draw
-    -- print(MODNAME)
-    ---должен получать реквесты на регистрацию ui от модулей
     return mod
 end
 
