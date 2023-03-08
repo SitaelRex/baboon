@@ -14,36 +14,61 @@ local function GetModName(fullPath)
     return fileName
 end
 
+local function DeepCopy(obj, seen)
+    if type(obj) ~= 'table' then return obj end
+    if seen and seen[obj] then return seen[obj] end
+    local s = seen or {}
+    local res = {}
+    s[obj] = res
+    for k, v in pairs(obj) do res[DeepCopy(k, s)] = DeepCopy(v, s) end
+    return setmetatable(res, getmetatable(obj))
+end
+
+local function Copy(value)
+    if type(value) == "table" then
+        local result = DeepCopy(value)
+        return result
+    else
+        return value
+    end
+end
+
 ---@param self Module
----Запечатывает модуль, и делает yневозможным случайное добовление новых полей
+---Запечатывает модуль, и делает невозможным случайное добовление новых полей
 local function Seal(self)
-    local selaMetatable = {
+    local proxyTable = {}
+    for key, v in pairs(self) do
+        proxyTable[key] = Copy(self[key])
+        self[key] = nil
+    end
+    local sealMetatable = {
         __newindex = function(...)
             print("unable to modify sealed module", ...)
         end,
-        __index = function(...)
-            print("unable to modify sealed module", ...)
+        __index = function(self, key)
+            local result = proxyTable[key]
+            return result
         end
     }
-    setmetatable(self, selaMetatable)
+    setmetatable(self, sealMetatable)
 end
 
 ---Возвращает модуль с настроенным окружением
 ---@param fullPath string
 ---@return Module
 local function SetupModule(fullPath)
-    ---@class Module
-    local mod = {}
-    ---@private
-    mod._PATH = GetModPath(fullPath)
-    ---@private
-    mod._MODNAME = GetModName(fullPath)
+    local mod = {} ---@class Module
+    mod._PATH = GetModPath(fullPath) ---@private
+    mod._MODNAME = GetModName(fullPath) ---@private
     mod.GetModPath = function(self) return self._PATH end
     mod.GetModName = function(self) return self._MODNAME end
     mod.Seal = Seal
     return mod
 end
 
-local function Init(...) _G.SetupModule = SetupModule end
+local function Init(...)
+    _G.SetupModule = SetupModule
+    _G.Copy = Copy
+end
 
 return Init(...)
