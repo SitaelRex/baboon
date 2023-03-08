@@ -1,7 +1,7 @@
----стандартные параметры инициализации движка
+local FULLPATH = ...
+
 local defaultParams = {}
 defaultParams.contentPath = "content"
-
 local function IsCorrect(params)
     local params = params
     if params then
@@ -16,12 +16,13 @@ end
 ---@param params table
 local function Init(params)
     local params = IsCorrect(params) -- or defaultParams
-    local contentPath = params.contentPath
+    local mod = SetupModule(FULLPATH)
+
+    --  local contentPath = params.contentPath
     local modules = {}
-    local mod = {}
 
     mod.CheckContent = function()
-        local checkPath = contentPath
+        local checkPath = params.contentPath
         local contents = love.filesystem.getDirectoryItems(checkPath)
         for _, value in pairs(contents) do
             local contentPath = checkPath .. "/" .. value

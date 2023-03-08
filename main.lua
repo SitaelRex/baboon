@@ -1,6 +1,7 @@
 local engineParams = {}
 local engine
 function love.load()
+    require("utils")
     engine = require("engine")(engineParams)
     engine.CheckContent()
 end
