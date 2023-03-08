@@ -23,7 +23,10 @@ local function Init(params)
     mod.CheckContent = function()
         local checkPath = contentPath
         local contents = love.filesystem.getDirectoryItems(checkPath)
-        for key, value in pairs(contents) do print(key, value) end
+        for _, value in pairs(contents) do
+			local contentPath = checkPath.."/"..value
+			modules[value] = require(contentPath)
+		end
     end
 
     return mod
