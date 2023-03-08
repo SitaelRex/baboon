@@ -20,8 +20,15 @@ end
 local function SetupModule(fullPath)
     ---@class Module
     local mod = {}
+    ---@private
     mod._PATH = GetModPath(fullPath)
+    ---@private
     mod._MODNAME = GetModName(fullPath)
+
+    function mod:GetModPath() return self._PATH end
+
+    function mod:GetModName() return self._MODNAME end
+
     return mod
 end
 

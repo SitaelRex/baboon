@@ -15,10 +15,10 @@ end
 ---инициализатор движка 
 ---@param params table
 local function Init(params)
-    local params = IsCorrect(params) -- or defaultParams
-    local mod = SetupModule(FULLPATH)
 
-    --  local contentPath = params.contentPath
+    ---@class Engine: Module
+    local mod = SetupModule(FULLPATH)
+    local params = IsCorrect(params) -- or defaultParams
     local modules = {}
 
     mod.CheckContent = function()
