@@ -1,6 +1,5 @@
 local FULLPATH = ...
 local imgui = require("imgui")
-imgui.SetReturnValueLast(false)
 
 local function Update() imgui.NewFrame() end
 
@@ -17,11 +16,10 @@ local function Draw()
 end
 
 local function Init()
+    imgui.SetReturnValueLast(false)
     local mod = SetupModule(FULLPATH)
     mod.Update = Update
     mod.Draw = Draw
-    -- print(MODNAME)
-    ---должен получать реквесты на регистрацию ui от модулей
     return mod
 end
 
