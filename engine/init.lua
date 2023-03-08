@@ -14,13 +14,12 @@ end
 
 ---инициализатор движка 
 ---@param params table
+---@return Engine
 local function Init(params)
-
     ---@class Engine: Module
     local mod = SetupModule(FULLPATH)
     local params = IsCorrect(params) -- or defaultParams
     local modules = {}
-
     mod.CheckContent = function()
         local checkPath = params.contentPath
         local contents = love.filesystem.getDirectoryItems(checkPath)
@@ -29,7 +28,7 @@ local function Init(params)
             modules[value] = require(contentPath)
         end
     end
-
+    mod:Seal()
     return mod
 end
 
