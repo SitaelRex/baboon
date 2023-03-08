@@ -5,9 +5,9 @@ function love.load()
     require("utils")
     local engineInit = require("engine")
     engine = engineInit(engineParams)
-    engine.CheckContent()
+    engine:CheckContent()
 end
 
-function love.update() end
+function love.update() engine:Update() end
 
-function love.draw() end
+function love.draw() engine:Draw() end
