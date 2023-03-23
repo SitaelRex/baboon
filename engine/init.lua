@@ -1,13 +1,47 @@
 local FULLPATH = ...
 
+local CallbacksList = {
+    "Quit", "TextInput", "KeyPressed", "KeyReleased", "MouseMoved",
+    "MousePressed", "MouseReleased", "WheelMoved", "Load", "Update", "Draw"
+}
+local Callbacs = {}
 
-
-local function Update(modules, dt)
-    for key, mod in pairs(modules) do if mod.Update then mod.Update() end end
+for _, callbackName in ipairs(CallbacksList) do
+    Callbacs[callbackName] = function(modules, ...)
+        for _, mod in pairs(modules) do
+            if mod[callbackName] then mod[callbackName](...) end
+        end
+    end
 end
 
-local function Draw(modules)
-    for key, mod in pairs(modules) do if mod.Draw then mod.Draw() end end
+-- Callbacs.Quit = function() end
+--
+-- Callbacs.Textinput = function() end
+--
+-- Callbacs.Keypressed = function() end
+--
+-- Callbacs.Keyreleased = function() end
+--
+-- Callbacs.Mousemoved = function() end
+-- Callbacs.Mousepressed = function() end
+-- Callbacs.Mousereleased = function() end
+-- Callbacs.Wheelmoved = function() end
+-- Callbacs.Load = function() end
+--
+-- Callbacs.Update = function(modules, dt)
+--    for key, mod in pairs(modules) do if mod.Update then mod.Update(dt) end end
+-- end
+--
+-- Callbacs.Draw = function(modules)
+--    for key, mod in pairs(modules) do if mod.Draw then mod.Draw() end end
+-- end
+
+local EmitCallback = function(modules, callbackName, ...)
+    if Callbacs[callbackName] then
+        Callbacs[callbackName](modules, ...)
+    else
+        print("Engine doesn't have callback " .. callbackName)
+    end
 end
 
 ---@param params table
@@ -21,8 +55,15 @@ local function Init(params)
     local params = utils.IsCorrect(params)
     local modules = {}
     mod.CheckContent = function() modules = utils.CheckContent(params) end
-    mod.Update = function() Update(modules) end
-    mod.Draw = function() Draw(modules) end
+    mod.EmitCallback = function(self, callbackName, ...)
+        EmitCallback(modules, callbackName, ...)
+    end
+    -- for callbackName, func in pairs(Callbacs) do
+    --   mod[callbackName] = function() func(modules) end
+    -- end
+    -- mod.Load = function() Load(modules) end
+    --  mod.Update = function() Update(modules) end
+    -- mod.Draw = function() Draw(modules) end
     mod:Seal()
     return mod
 end
