@@ -1,16 +1,6 @@
 local FULLPATH = ...
 
-package.cpath = ".\\content\\baboon_editor\\?.dll;" .. package.cpath
-print(package.cpath)
--- paths = love.filesystem.getCRequirePath()
--- cwd = love.filesystem.getWorkingDirectory()
--- path = love.filesystem.getSource()
--- print(cwd)
-
--- package.preload['imgui'] = function() print("eee") end
-local imgui = require("imgui")
--- content/baboon_editor/?.dll
--- local imgui = package.loadlib('.\\content\\baboon_editor\\imgui.dll', "main")()
+local imgui = LoadDll("imgui", FULLPATH)
 
 local function Update() imgui.NewFrame() end
 

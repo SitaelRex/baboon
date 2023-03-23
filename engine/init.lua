@@ -1,11 +1,15 @@
 local FULLPATH = ...
 
+---список всех колбеков, для которых будут сгенерированы функции по шаблону
 local CallbacksList = {
     "Quit", "TextInput", "KeyPressed", "KeyReleased", "MouseMoved",
     "MousePressed", "MouseReleased", "WheelMoved", "Load", "Update", "Draw"
 }
+
+---таблица со сгенерироваными колбеками
 local Callbacs = {}
 
+---генерация колбеков по шаблону
 local function InitCallbacks()
     for _, callbackName in ipairs(CallbacksList) do
         Callbacs[callbackName] = function(modules, ...)

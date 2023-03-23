@@ -66,8 +66,16 @@ local function SetupModule(fullPath)
     return mod
 end
 
+---загружает dll из указанной папки
+local function LoadDll(dllName, path)
+    if path then package.cpath = ".\\" .. path .. "\\?.dll;" .. package.cpath end
+    local result = require(dllName)
+    return result
+end
+
 local function Init(...)
     _G.SetupModule = SetupModule
+    _G.LoadDll = LoadDll
     _G.Copy = Copy
 end
 
