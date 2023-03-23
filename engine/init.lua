@@ -6,35 +6,15 @@ local CallbacksList = {
 }
 local Callbacs = {}
 
-for _, callbackName in ipairs(CallbacksList) do
-    Callbacs[callbackName] = function(modules, ...)
-        for _, mod in pairs(modules) do
-            if mod[callbackName] then mod[callbackName](...) end
+local function InitCallbacks()
+    for _, callbackName in ipairs(CallbacksList) do
+        Callbacs[callbackName] = function(modules, ...)
+            for _, mod in pairs(modules) do
+                if mod[callbackName] then mod[callbackName](...) end
+            end
         end
     end
 end
-
--- Callbacs.Quit = function() end
---
--- Callbacs.Textinput = function() end
---
--- Callbacs.Keypressed = function() end
---
--- Callbacs.Keyreleased = function() end
---
--- Callbacs.Mousemoved = function() end
--- Callbacs.Mousepressed = function() end
--- Callbacs.Mousereleased = function() end
--- Callbacs.Wheelmoved = function() end
--- Callbacs.Load = function() end
---
--- Callbacs.Update = function(modules, dt)
---    for key, mod in pairs(modules) do if mod.Update then mod.Update(dt) end end
--- end
---
--- Callbacs.Draw = function(modules)
---    for key, mod in pairs(modules) do if mod.Draw then mod.Draw() end end
--- end
 
 local EmitCallback = function(modules, callbackName, ...)
     if Callbacs[callbackName] then
@@ -48,6 +28,7 @@ end
 ---@return Engine
 --- инициализатор движка 
 local function Init(params)
+    InitCallbacks()
     local mod = SetupModule(FULLPATH) ---@class Engine: Module
     local engineFolder = mod:GetModPath()
     local utils = require(engineFolder .. "/utils")

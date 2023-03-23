@@ -1,6 +1,10 @@
 local engineParams = {}
 local engine
 
+-- local libraryPath = "?.dll;./content/?.dll;./content/baboon_editor/?.dll;" -- ".\\content\\baboon_editor\\"
+
+-- love.filesystem.setCRequirePath("./content/baboon_editor/?.dll")
+
 function love.load()
     require("utils")
     local engineInit = require("engine")
