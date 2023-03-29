@@ -1,49 +1,59 @@
 local FULLPATH = ...
+local isExist = false
 
-local defaultParams = {}
-defaultParams.contentPath = "content"
-local function IsCorrect(params)
-    local params = params
-    if params then
-        params.contentPath = params.contentPath or defaultParams.contentPath
-        return params
+---список всех колбеков, для которых будут сгенерированы функции по шаблону
+local CallbacksList = {
+    "Quit", "TextInput", "KeyPressed", "KeyReleased", "MouseMoved",
+    "MousePressed", "MouseReleased", "WheelMoved", "Load", "Update", "Draw"
+}
+
+---таблица со сгенерироваными колбеками
+local Callbacs = {}
+
+---генерация колбеков по шаблону
+local function InitCallbacks()
+    for _, callbackName in ipairs(CallbacksList) do
+        Callbacs[callbackName] = function(modules, ...)
+            for _, mod in pairs(modules) do
+                if mod[callbackName] then mod[callbackName](...) end
+            end
+        end
+    end
+end
+
+local EmitCallback = function(modules, callbackName, ...)
+    if Callbacs[callbackName] then
+        Callbacs[callbackName](modules, ...)
     else
-        return defaultParams
+        print("Engine doesn't have callback " .. callbackName)
     end
 end
 
-local function CheckContent(params)
-    local modules = {}
-    local checkPath = params.contentPath
-    local contents = love.filesystem.getDirectoryItems(checkPath)
-    for _, value in pairs(contents) do
-        local contentPath = checkPath .. "/" .. value
-        modules[value] = require(contentPath)
-    end
-    return modules
-end
-
-local function Update(modules, dt)
-    for key, mod in pairs(modules) do if mod.Update then mod.Update() end end
-end
-
-local function Draw(modules)
-    for key, mod in pairs(modules) do if mod.Draw then mod.Draw() end end
-end
-
----инициализатор движка 
 ---@param params table
 ---@return Engine
+--- инициализатор движка 
 local function Init(params)
-    ---@class Engine: Module
-    local mod = SetupModule(FULLPATH)
-    local params = IsCorrect(params) -- or defaultParams
+    assert(not isExist, "Engine can init only once")
+    isExist = true
+    InitCallbacks()
+    local mod = SetupModule(FULLPATH) ---@class Engine: Module
     local engineFolder = mod:GetModPath()
+    local utils = require(engineFolder .. "/utils")
     local request = require(engineFolder .. "/request")
+    local params = utils.IsCorrect(params)
+    local modulesList, packagesList = {}, {}
     local modules = {}
-    mod.CheckContent = function() modules = CheckContent(params) end
-    mod.Update = function() Update(modules) end
-    mod.Draw = function() Draw(modules) end
+    mod.CheckContent = function()
+        modulesList, packagesList = utils.CheckContent(params)
+    end -- load from conf
+    ---загрузка модулей после check content
+    mod.LoadContent = function(self, config)
+        -- local config = config or nil
+        modules = utils.LoadContent(config, modules, modulesList, packagesList)
+    end
+    mod.EmitCallback = function(self, callbackName, ...)
+        EmitCallback(modules, callbackName, ...)
+    end
     mod:Seal()
     return mod
 end
