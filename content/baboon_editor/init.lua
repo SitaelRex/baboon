@@ -1,5 +1,6 @@
 local FULLPATH = ...
-local imgui = require("imgui")
+
+local imgui = LoadDll("imgui", FULLPATH)
 
 local function Update() imgui.NewFrame() end
 
