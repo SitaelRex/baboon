@@ -6,6 +6,7 @@ function love.load()
     local engineInit = require("engine")
     engine = engineInit(engineParams)
     engine:CheckContent()
+    engine:LoadContent()
     engine:EmitCallback("Load")
 end
 

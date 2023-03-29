@@ -1,3 +1,7 @@
+local FULLPATH = ...
+---@type List
+local List = require(FULLPATH .. "/List")
+
 ---@param fullPath string
 ---@return string
 ---возвращает путь к папке модуля
@@ -34,7 +38,7 @@ local function Copy(value)
 end
 
 ---@param self Module
----Запечатывает модуль, и делает невозможным случайное добовление новых полей
+---Запечатывает модуль, и делает невозможным случайное добавление новых полей
 local function Seal(self)
     local proxyTable = {}
     for key, v in pairs(self) do
@@ -77,6 +81,8 @@ local function Init(...)
     _G.SetupModule = SetupModule
     _G.LoadDll = LoadDll
     _G.Copy = Copy
+    
+    _G.List = List
 end
 
 return Init(...)
